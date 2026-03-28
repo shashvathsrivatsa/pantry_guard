@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+        <title>Pantry Guard</title>
+
+        <!-- iOS PWA fullscreen -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="ReceiptRx">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#0d0d0f">
+
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+        <div class="shell">
+
+            <div class="scroll-area">
+
+                <!-- HOME -->
+                <div class="page active" id="page-home">
+                    <div class="greeting">
+                        <div class="greeting-sub">Good morning</div>
+                        <div class="greeting-name">Cart Score: <span>B+</span></div>
+                    </div>
+                    <div class="health-card">
+                        <div class="ring-wrap">
+                            <svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="30"/><circle class="ring-fill" cx="36" cy="36" r="30"/></svg>
+                            <div class="ring-label"><div class="ring-score">78</div><div class="ring-letter">/ 100</div></div>
+                        </div>
+                        <div class="health-info">
+                            <h3>Mostly Healthy Cart</h3>
+                            <p>3 items flagged, 2 active recalls match your pantry</p>
+                            <div class="health-trend">↑ +4 pts from last shop</div>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-card" onclick="switchTab('pantry')"><div class="stat-val green">24</div><div class="stat-lbl">Pantry Items</div></div>
+                        <div class="stat-card" onclick="switchTab('pantry')"><div class="stat-val red">2</div><div class="stat-lbl">Recalled</div></div>
+                        <div class="stat-card" onclick="switchTab('alerts')"><div class="stat-val orange">5</div><div class="stat-lbl">Alerts</div></div>
+                    </div>
+                    <div class="section-label">Last Scan · 3 days ago</div>
+                    <div class="h-scroll">
+                        <div class="recent-chip"><div class="chip-grade A">A</div><div class="chip-name">Quaker Oats<br>Old Fashioned</div></div>
+                        <div class="recent-chip"><div class="chip-grade F">F</div><div class="chip-name">Oscar Mayer<br>Classic Wieners</div></div>
+                        <div class="recent-chip"><div class="chip-grade C">C</div><div class="chip-name">Tropicana OJ<br>52 fl oz</div></div>
+                        <div class="recent-chip"><div class="chip-grade A">A</div><div class="chip-name">Baby Spinach<br>5oz bag</div></div>
+                        <div class="recent-chip"><div class="chip-grade F">F</div><div class="chip-name">Mountain Dew<br>12-pack</div></div>
+                        <div class="recent-chip"><div class="chip-grade D">D</div><div class="chip-name">Lay's Classic<br>Party Size</div></div>
+                    </div>
+                    <div class="section-label" style="margin-top:20px">FDA Watch This Week</div>
+                    <div class="recall-card" onclick="switchTab('recalls')">
+                        <div class="recall-header"><div class="severity-dot sev-1"></div><div class="recall-title">Boar's Head Deli Meats — Listeria monocytogenes contamination risk</div><div class="recall-class class-I">Class I</div></div>
+                        <div class="recall-meta">FDA · Issued 3 days ago · <strong>7.2M lbs</strong> affected</div>
+                    </div>
+                </div>
+
+                <!-- PANTRY -->
+                <div class="page" id="page-pantry">
+                    <div class="page-header">
+                        <div><div class="page-title">Pantry</div><div class="page-subtitle">24 items · 2 recalled</div></div>
+                        <div class="badge-count">2 ⚠</div>
+                    </div>
+                    <div class="pantry-filter">
+                        <button class="filter-pill active" onclick="filterPantry(this,'all')">All</button>
+                        <button class="filter-pill red-pill" onclick="filterPantry(this,'recalled')">Recalled</button>
+                        <button class="filter-pill" onclick="filterPantry(this,'watch')">Watch</button>
+                        <button class="filter-pill" onclick="filterPantry(this,'safe')">Safe</button>
+                    </div>
+                    <div class="swipe-hint">← swipe left to remove</div>
+                    <div id="pantry-list"></div>
+                </div>
+
+                <!-- RECALLS -->
+                <div class="page" id="page-recalls">
+                    <div class="page-header">
+                        <div>
+                            <div class="page-title">FDA Recalls</div>
+                            <div class="page-subtitle">Updated today · 6 active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALERTS -->
+                <div class="page" id="page-alerts">
+                    <div class="page-header">
+                        <div>
+                            <div class="page-title">Alerts</div>
+                            <div class="page-subtitle" id="alerts-subtitle">0 new · 0 unread</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /scroll-area -->
+
+            <!-- Floating liquid glass nav + FAB -->
+            <div class="bottom-float">
+                <div class="bottom-float-inner">
+                    <nav class="bottom-nav">
+                        <button class="nav-btn active" id="nav-home" onclick="switchTab('home')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <span class="nav-label">Home</span>
+                        </button>
+                        <button class="nav-btn" id="nav-pantry" onclick="switchTab('pantry')">
+                            <div class="nav-badge-wrap">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                            </div>
+                            <span class="nav-label">Pantry</span>
+                        </button>
+                        <button class="nav-btn" id="nav-recalls" onclick="switchTab('recalls')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            <span class="nav-label">Recalls</span>
+                        </button>
+                        <button class="nav-btn" id="nav-alerts" onclick="switchTab('alerts')">
+                            <div class="nav-badge-wrap">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                <span class="nav-badge", id="alerts-badge">0</span>
+                            </div>
+                            <span class="nav-label">Alerts</span>
+                        </button>
+                    </nav>
+                    <div class="fab-wrap">
+                        <button class="fab" onclick="triggerCamera()" aria-label="Scan receipt">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden camera input -->
+            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none">
+
+            <!-- Processing overlay -->
+            <div class="modal-overlay" id="processing-modal">
+                <div class="modal-sheet processing-sheet">
+                    <div class="processing-icon">🧾</div>
+                    <div class="processing-title" id="processing-title">Reading receipt…</div>
+                    <div class="processing-sub" id="processing-sub">Hang tight while we scan your items</div>
+                    <div class="processing-bar"><div class="processing-fill" id="processing-fill"></div></div>
+                </div>
+            </div>
+
+            <!-- Results modal -->
+            <div class="modal-overlay" id="results-modal" onclick="closeResultsModal(event)">
+                <div class="modal-sheet">
+                    <div class="sheet-handle"></div>
+                    <div class="sheet-title">Added to Pantry ✓</div>
+                    <div class="sheet-sub" id="results-store"></div>
+                    <div id="results-list"></div>
+                    <button class="btn-sheet-close" onclick="closeResultsModal()">Done</button>
+                </div>
+            </div>
+
+            <!-- Item Detail Modal -->
+            <div class="modal-overlay" id="detail-modal" onclick="closeDetailModal(event)">
+                <div class="modal-sheet" id="detail-sheet">
+                    <div class="sheet-handle"></div>
+                    <div id="detail-content"></div>
+                    <button class="btn-sheet-close" onclick="closeDetailModal()">Close</button>
+                </div>
+            </div>
+
+        </div><!-- /shell -->
+
+        <script src="app/state.js"></script>
+        <script src="app/pantry.js"></script>
+        <script src="app/ui.js"></script>
+        <script src="app/camera.js"></script>
+        <script src="app/bootstrap.js"></script>
+
+    </body>
+</html>
