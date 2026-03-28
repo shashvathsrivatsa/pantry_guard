@@ -2,67 +2,236 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <title>Pantry Guard</title>
-
-        <!-- iOS PWA fullscreen -->
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="ReceiptRx">
+        <meta name="apple-mobile-web-app-title" content="Pantry Guard">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="theme-color" content="#0d0d0f">
-
         <link rel="stylesheet" href="styles.css">
+        <style>
+            /* ── Dashboard ──────────────────────────────────────────────── */
+            .db-header {
+                display:flex; align-items:flex-start; justify-content:space-between;
+                padding:22px 0 14px;
+            }
+            .db-eyebrow {
+                font-size:11px; font-weight:600; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--muted); margin-bottom:3px;
+            }
+            .db-title {
+                font-size:28px; font-weight:700; letter-spacing:-0.8px; color:var(--text);
+            }
+            .db-last-scan {
+                font-size:11px; color:var(--muted); margin-top:6px;
+                background:var(--s1); border:1px solid var(--border);
+                padding:5px 10px; border-radius:99px; white-space:nowrap; flex-shrink:0;
+            }
+
+            /* Hero */
+            .db-hero {
+                border-radius:22px; padding:20px;
+                display:flex; align-items:center; justify-content:space-between;
+                margin-bottom:12px; border:1px solid var(--border);
+                background:var(--s1); transition:background .4s, border-color .4s;
+            }
+            .db-hero.safe {
+                background:linear-gradient(135deg,rgba(52,199,89,.08),rgba(52,199,89,.03));
+                border-color:rgba(52,199,89,.22);
+            }
+            .db-hero.danger {
+                background:linear-gradient(135deg,rgba(255,59,48,.1),rgba(255,59,48,.04));
+                border-color:rgba(255,59,48,.28);
+            }
+            .db-hero.warning {
+                background:linear-gradient(135deg,rgba(255,107,53,.08),rgba(255,107,53,.03));
+                border-color:rgba(255,107,53,.22);
+            }
+            .db-hero-left { display:flex; align-items:center; gap:14px; }
+            .db-status-dot {
+                width:12px; height:12px; border-radius:50%; flex-shrink:0;
+                background:var(--muted); transition:background .4s, box-shadow .4s;
+            }
+            .db-hero.safe    .db-status-dot { background:var(--green);  box-shadow:0 0 0 4px rgba(52,199,89,.18);  animation:pg-green 2.4s ease infinite; }
+            .db-hero.danger  .db-status-dot { background:var(--red);    box-shadow:0 0 0 4px rgba(255,59,48,.2);   animation:pg-red   1.8s ease infinite; }
+            .db-hero.warning .db-status-dot { background:var(--orange); box-shadow:0 0 0 4px rgba(255,107,53,.18); animation:pg-orange 2s ease infinite; }
+            @keyframes pg-green  { 0%,100%{box-shadow:0 0 0 4px rgba(52,199,89,.18)}  50%{box-shadow:0 0 0 9px rgba(52,199,89,.05)} }
+            @keyframes pg-red    { 0%,100%{box-shadow:0 0 0 4px rgba(255,59,48,.2)}   50%{box-shadow:0 0 0 11px rgba(255,59,48,.04)} }
+            @keyframes pg-orange { 0%,100%{box-shadow:0 0 0 4px rgba(255,107,53,.18)} 50%{box-shadow:0 0 0 9px rgba(255,107,53,.05)} }
+            .db-status-label {
+                font-size:17px; font-weight:700; letter-spacing:-0.4px; color:var(--text);
+            }
+            .db-hero.safe    .db-status-label { color:var(--green); }
+            .db-hero.danger  .db-status-label { color:var(--red); }
+            .db-hero.warning .db-status-label { color:var(--orange); }
+            .db-status-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+            .db-hero-icon { font-size:36px; }
+
+            /* Stat row */
+            .db-stat-row {
+                display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:20px;
+            }
+            .db-stat {
+                background:var(--s1); border:1px solid var(--border); border-radius:16px;
+                padding:13px 8px; text-align:center; cursor:pointer; transition:transform .15s;
+            }
+            .db-stat:active { transform:scale(.95); }
+            .db-stat-danger { border-color:rgba(255,59,48,.12);  background:rgba(255,59,48,.04); }
+            .db-stat-warn   { border-color:rgba(255,107,53,.12); background:rgba(255,107,53,.03); }
+            .db-stat-val {
+                font-size:22px; font-weight:700; letter-spacing:-0.5px; color:var(--text);
+            }
+            .db-stat-danger .db-stat-val { color:var(--red); }
+            .db-stat-warn   .db-stat-val { color:var(--orange); }
+            .db-stat-lbl {
+                font-size:9px; color:var(--muted); margin-top:2px;
+                font-weight:500; text-transform:uppercase; letter-spacing:.05em;
+            }
+
+            /* Section headers */
+            .db-section-head {
+                display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;
+            }
+            .db-section-label {
+                font-size:11px; font-weight:600; letter-spacing:.1em;
+                text-transform:uppercase; color:var(--muted);
+            }
+            .db-section-link { font-size:11px; color:var(--blue); cursor:pointer; font-weight:500; }
+
+            /* Expiring rows */
+            .db-expiry-row {
+                display:flex; align-items:center; gap:12px;
+                background:var(--s1); border:1px solid var(--border); border-radius:14px;
+                padding:12px 14px; margin-bottom:8px; cursor:pointer; transition:transform .15s;
+            }
+            .db-expiry-row:active { transform:scale(.98); }
+            .db-expiry-row.urgent { border-color:rgba(255,59,48,.2);   background:rgba(255,59,48,.03); }
+            .db-expiry-row.soon   { border-color:rgba(255,107,53,.15); background:rgba(255,107,53,.02); }
+            .db-expiry-emoji { font-size:22px; width:32px; text-align:center; flex-shrink:0; }
+            .db-expiry-name  { font-size:13px; font-weight:500; color:var(--text); }
+            .db-expiry-days  { font-size:11px; margin-top:1px; color:var(--muted); }
+            .db-expiry-row.urgent .db-expiry-days { color:var(--red);    font-weight:600; }
+            .db-expiry-row.soon   .db-expiry-days { color:var(--orange); }
+
+            /* FDA banner */
+            .db-fda-banner {
+                background:var(--s1); border:1px solid var(--border); border-radius:14px;
+                padding:12px 14px; display:flex; align-items:center; gap:10px; margin-bottom:10px;
+            }
+            .db-fda-dot {
+                width:8px; height:8px; border-radius:50%; flex-shrink:0;
+                background:var(--green); animation:blink 2.2s ease infinite;
+            }
+            .db-fda-text { font-size:12px; color:var(--muted); line-height:1.4; }
+            .db-fda-text strong { color:var(--text); font-weight:600; }
+
+            /* Mini recall cards */
+            .db-mini-recall {
+                background:var(--s1); border:1px solid var(--border); border-radius:14px;
+                padding:12px 14px; margin-bottom:8px; cursor:pointer;
+                display:flex; align-items:flex-start; gap:10px; transition:transform .15s;
+            }
+            .db-mini-recall:active { transform:scale(.98); }
+            .db-mini-sev { width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+            .db-mini-sev.s1 { background:var(--red);    box-shadow:0 0 5px var(--red-glow); }
+            .db-mini-sev.s2 { background:var(--orange); }
+            .db-mini-sev.s3 { background:var(--yellow); }
+            .db-mini-body { flex:1; min-width:0; }
+            .db-mini-title {
+                font-size:12px; font-weight:500; color:var(--text); line-height:1.4;
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            }
+            .db-mini-meta  { font-size:10px; color:var(--muted); margin-top:2px; }
+            .db-mini-badge { font-size:9px; font-weight:700; padding:2px 6px; border-radius:5px; flex-shrink:0; }
+            .db-mini-badge.class-I   { background:var(--red-dim);    color:var(--red); }
+            .db-mini-badge.class-II  { background:var(--orange-dim); color:var(--orange); }
+            .db-mini-badge.class-III { background:var(--yellow-dim); color:#b8860b; }
+
+            .db-empty-state {
+                font-size:12px; color:var(--dim); text-align:center;
+                padding:18px 0; font-style:italic;
+            }
+        </style>
     </head>
 
     <body>
         <div class="shell">
-
             <div class="scroll-area">
 
-                <!-- HOME -->
+                <!-- HOME / DASHBOARD -->
                 <div class="page active" id="page-home">
-                    <div class="greeting">
-                        <div class="greeting-sub">Good morning</div>
-                        <div class="greeting-name">Cart Score: <span>B+</span></div>
-                    </div>
-                    <div class="health-card">
-                        <div class="ring-wrap">
-                            <svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="30"/><circle class="ring-fill" cx="36" cy="36" r="30"/></svg>
-                            <div class="ring-label"><div class="ring-score">78</div><div class="ring-letter">/ 100</div></div>
+
+                    <div class="db-header">
+                        <div>
+                            <div class="db-eyebrow">Pantry Guard</div>
+                            <div class="db-title">Dashboard</div>
                         </div>
-                        <div class="health-info">
-                            <h3>Mostly Healthy Cart</h3>
-                            <p>3 items flagged, 2 active recalls match your pantry</p>
-                            <div class="health-trend">↑ +4 pts from last shop</div>
+                        <div class="db-last-scan" id="db-last-scan">No scans yet</div>
+                    </div>
+
+                    <!-- Safety hero -->
+                    <div class="db-hero" id="db-hero">
+                        <div class="db-hero-left">
+                            <div class="db-status-dot" id="db-status-dot"></div>
+                            <div>
+                                <div class="db-status-label" id="db-status-label">Loading…</div>
+                                <div class="db-status-sub" id="db-status-sub">Checking your pantry</div>
+                            </div>
+                        </div>
+                        <div class="db-hero-icon" id="db-hero-icon">🛡️</div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="db-stat-row">
+                        <div class="db-stat" onclick="switchTab('pantry')">
+                            <div class="db-stat-val" id="db-stat-total">0</div>
+                            <div class="db-stat-lbl">Tracked</div>
+                        </div>
+                        <div class="db-stat db-stat-danger" onclick="switchTab('pantry')">
+                            <div class="db-stat-val" id="db-stat-recalled">0</div>
+                            <div class="db-stat-lbl">Recalled</div>
+                        </div>
+                        <div class="db-stat db-stat-warn" onclick="switchTab('pantry')">
+                            <div class="db-stat-val" id="db-stat-expiring">0</div>
+                            <div class="db-stat-lbl">Expiring</div>
+                        </div>
+                        <div class="db-stat" onclick="switchTab('alerts')">
+                            <div class="db-stat-val" id="db-stat-alerts">0</div>
+                            <div class="db-stat-lbl">Alerts</div>
                         </div>
                     </div>
-                    <div class="stat-row">
-                        <div class="stat-card" onclick="switchTab('pantry')"><div class="stat-val green">24</div><div class="stat-lbl">Pantry Items</div></div>
-                        <div class="stat-card" onclick="switchTab('pantry')"><div class="stat-val red">2</div><div class="stat-lbl">Recalled</div></div>
-                        <div class="stat-card" onclick="switchTab('alerts')"><div class="stat-val orange">5</div><div class="stat-lbl">Alerts</div></div>
+
+                    <!-- Expiring soon -->
+                    <div class="db-section-head">
+                        <span class="db-section-label">Expiring This Week</span>
+                        <span class="db-section-link" onclick="switchTab('pantry')">See all →</span>
                     </div>
-                    <div class="section-label">Last Scan · 3 days ago</div>
-                    <div class="h-scroll">
-                        <div class="recent-chip"><div class="chip-grade A">A</div><div class="chip-name">Quaker Oats<br>Old Fashioned</div></div>
-                        <div class="recent-chip"><div class="chip-grade F">F</div><div class="chip-name">Oscar Mayer<br>Classic Wieners</div></div>
-                        <div class="recent-chip"><div class="chip-grade C">C</div><div class="chip-name">Tropicana OJ<br>52 fl oz</div></div>
-                        <div class="recent-chip"><div class="chip-grade A">A</div><div class="chip-name">Baby Spinach<br>5oz bag</div></div>
-                        <div class="recent-chip"><div class="chip-grade F">F</div><div class="chip-name">Mountain Dew<br>12-pack</div></div>
-                        <div class="recent-chip"><div class="chip-grade D">D</div><div class="chip-name">Lay's Classic<br>Party Size</div></div>
+                    <div id="db-expiring-list">
+                        <div class="db-empty-state">Scan a receipt to track expiry dates</div>
                     </div>
-                    <div class="section-label" style="margin-top:20px">FDA Watch This Week</div>
-                    <div class="recall-card" onclick="switchTab('recalls')">
-                        <div class="recall-header"><div class="severity-dot sev-1"></div><div class="recall-title">Boar's Head Deli Meats — Listeria monocytogenes contamination risk</div><div class="recall-class class-I">Class I</div></div>
-                        <div class="recall-meta">FDA · Issued 3 days ago · <strong>7.2M lbs</strong> affected</div>
+
+                    <!-- FDA activity -->
+                    <div class="db-section-head" style="margin-top:18px">
+                        <span class="db-section-label">FDA Activity</span>
+                        <span class="db-section-link" onclick="switchTab('recalls')">View all →</span>
                     </div>
+                    <div class="db-fda-banner">
+                        <div class="db-fda-dot"></div>
+                        <div class="db-fda-text" id="db-fda-text">Loading recall data…</div>
+                    </div>
+                    <div id="db-recent-recalls">
+                        <div class="db-empty-state">Loading…</div>
+                    </div>
+
                 </div>
 
                 <!-- PANTRY -->
                 <div class="page" id="page-pantry">
                     <div class="page-header">
-                        <div><div class="page-title">Pantry</div><div class="page-subtitle">24 items · 2 recalled</div></div>
-                        <div class="badge-count">2 ⚠</div>
+                        <div><div class="page-title">Pantry</div><div class="page-subtitle">0 items · 0 recalled</div></div>
+                        <div class="badge-count" style="display:none">0 ⚠</div>
                     </div>
                     <div class="pantry-filter">
                         <button class="filter-pill active" onclick="filterPantry(this,'all')">All</button>
@@ -79,7 +248,7 @@
                     <div class="page-header">
                         <div>
                             <div class="page-title">FDA Recalls</div>
-                            <div class="page-subtitle">Updated today · 6 active</div>
+                            <div class="page-subtitle">Loading…</div>
                         </div>
                     </div>
                 </div>
@@ -96,7 +265,7 @@
 
             </div><!-- /scroll-area -->
 
-            <!-- Floating liquid glass nav + FAB -->
+            <!-- Nav + FAB -->
             <div class="bottom-float">
                 <div class="bottom-float-inner">
                     <nav class="bottom-nav">
@@ -117,7 +286,7 @@
                         <button class="nav-btn" id="nav-alerts" onclick="switchTab('alerts')">
                             <div class="nav-badge-wrap">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                                <span class="nav-badge", id="alerts-badge">0</span>
+                                <span class="nav-badge" id="alerts-badge">0</span>
                             </div>
                             <span class="nav-label">Alerts</span>
                         </button>
@@ -171,5 +340,113 @@
         <script src="app/camera.js"></script>
         <script src="app/bootstrap.js"></script>
 
+        <script>
+        // ── Dashboard renderer ─────────────────────────────────────────────
+        window.renderDashboard = function() {
+            const pantry   = window.PANTRY || [];
+            const total    = pantry.length;
+            const recalled = pantry.filter(i => i.cat === 'recalled').length;
+            const alerts   = document.querySelectorAll('#page-alerts .alert-card').length;
+
+            // Parse expiring items from meta string "Added Mar 28 · Exp Apr 4"
+            const now = Date.now();
+            const currentYear = new Date().getFullYear();
+            const expiring = pantry.map(item => {
+                const m = (item.meta || '').match(/Exp (\w+ \d+)/);
+                if (!m) return null;
+                let d = new Date(`${m[1]} ${currentYear}`);
+                // Handle year rollover
+                if (d < new Date(now - 86400000 * 30)) d.setFullYear(currentYear + 1);
+                const diff = Math.ceil((d - now) / 86400000);
+                return diff <= 7 ? { item, diff } : null;
+            }).filter(Boolean).sort((a, b) => a.diff - b.diff);
+
+            // Stats
+            document.getElementById('db-stat-total').textContent    = total;
+            document.getElementById('db-stat-recalled').textContent = recalled;
+            document.getElementById('db-stat-expiring').textContent = expiring.length;
+            document.getElementById('db-stat-alerts').textContent   = alerts;
+
+            // Hero
+            const hero  = document.getElementById('db-hero');
+            const label = document.getElementById('db-status-label');
+            const sub   = document.getElementById('db-status-sub');
+            const icon  = document.getElementById('db-hero-icon');
+            hero.className = 'db-hero';
+
+            if (recalled > 0) {
+                hero.classList.add('danger');
+                label.textContent = `${recalled} Item${recalled > 1 ? 's' : ''} Recalled`;
+                sub.textContent   = 'Do not consume — check alerts';
+                icon.textContent  = '🚨';
+            } else if (expiring.length > 0) {
+                hero.classList.add('warning');
+                label.textContent = `${expiring.length} Expiring Soon`;
+                sub.textContent   = 'Check your pantry this week';
+                icon.textContent  = '⏰';
+            } else if (total > 0) {
+                hero.classList.add('safe');
+                label.textContent = 'All Clear';
+                sub.textContent   = `${total} items tracked, none recalled`;
+                icon.textContent  = '✅';
+            } else {
+                label.textContent = 'Nothing tracked yet';
+                sub.textContent   = 'Tap + to scan your first receipt';
+                icon.textContent  = '🛒';
+            }
+
+            // Expiring list
+            const expiryEl = document.getElementById('db-expiring-list');
+            if (expiring.length === 0) {
+                expiryEl.innerHTML = `<div class="db-empty-state">Nothing expiring in the next 7 days</div>`;
+            } else {
+                expiryEl.innerHTML = expiring.slice(0, 4).map(({ item, diff }) => {
+                    const cls  = diff <= 2 ? 'urgent' : diff <= 5 ? 'soon' : '';
+                    const text = diff <= 0 ? 'Expires today' : diff === 1 ? 'Expires tomorrow' : `Expires in ${diff} days`;
+                    return `<div class="db-expiry-row ${cls}" onclick="switchTab('pantry')">
+                        <div class="db-expiry-emoji">${item.emoji || '🛒'}</div>
+                        <div>
+                            <div class="db-expiry-name">${item.name}</div>
+                            <div class="db-expiry-days">${text}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Last scan
+            if (pantry.length > 0) {
+                const m = (pantry[0].meta || '').match(/Added (.+?) ·/);
+                document.getElementById('db-last-scan').textContent = m ? `Last scan ${m[1]}` : 'Recently scanned';
+            }
+        };
+
+        // ── Populate FDA section after recalls load ────────────────────────
+        window.renderDashboardRecalls = function(recalls) {
+            const fdaText   = document.getElementById('db-fda-text');
+            const recallsEl = document.getElementById('db-recent-recalls');
+
+            if (fdaText) fdaText.innerHTML = `<strong>${recalls.length} active recalls</strong> being monitored · Updated now`;
+
+            if (!recalls.length) {
+                recallsEl.innerHTML = `<div class="db-empty-state">No active recalls found</div>`;
+                return;
+            }
+
+            recallsEl.innerHTML = recalls.slice(0, 10).map(r => {
+                const cls   = (r.classification || '').toLowerCase();
+                const sev   = cls.includes('class i') && !cls.includes('class ii') ? 's1' : cls.includes('class ii') ? 's2' : 's3';
+                const badge = cls.includes('class i') && !cls.includes('class ii') ? 'class-I' : cls.includes('class ii') ? 'class-II' : 'class-III';
+                const title = (r.product_description || 'FDA Recall').slice(0, 60) + ((r.product_description||'').length > 60 ? '…' : '');
+                return `<div class="db-mini-recall" onclick="switchTab('recalls')">
+                    <div class="db-mini-sev ${sev}"></div>
+                    <div class="db-mini-body">
+                        <div class="db-mini-title">${title}</div>
+                        <div class="db-mini-meta">${r.recalling_firm || 'Unknown firm'}</div>
+                    </div>
+                    <div class="db-mini-badge ${badge}">${r.classification || '?'}</div>
+                </div>`;
+            }).join('');
+        };
+        </script>
     </body>
 </html>

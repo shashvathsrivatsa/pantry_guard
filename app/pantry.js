@@ -84,11 +84,25 @@ function deleteItem(wrapper){
 }
 
 window.updateRecalledCount = function updateRecalledCount(){
-    const remaining = document.querySelectorAll('.pantry-item.recalled').length;
-    const badge = document.getElementById('pantry-badge');
-    if (!badge) return;
-    badge.textContent = remaining;
-    badge.style.display = remaining===0 ? 'none' : '';
+    const total = window.PANTRY.length;
+    const recalled = window.PANTRY.filter(i => i.cat === "recalled").length;
+
+    // Pantry page subtitle
+    const subtitle = document.querySelector("#page-pantry .page-subtitle");
+    if (subtitle) {
+        subtitle.textContent = `${total} item${total !== 1 ? "s" : ""} · ${recalled} recalled`;
+    }
+
+    // Pantry page top-right badge (the red "2 ⚠")
+    const topBadge = document.querySelector("#page-pantry .badge-count");
+    if (topBadge) {
+        if (recalled > 0) {
+            topBadge.textContent = `${recalled} ⚠`;
+            topBadge.style.display = "";
+        } else {
+            topBadge.style.display = "none";
+        }
+    }
 };
 
 // ── Pantry filter ──────────────────────────────────────────────────────────

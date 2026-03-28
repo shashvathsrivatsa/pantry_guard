@@ -4,7 +4,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { inputReceipt } = require("./server/ocr");
-const { fetchOngoingFoodRecalls } = require("./server/fda_tracker");
+const { fetchRecallsWithSummaries } = require("./server/fda_tracker");
 
 const port = 3000;
 
@@ -26,7 +26,10 @@ const server = http.createServer((req, res) => {
     if (req.method === "GET" && req.url === "/recalls") {
         (async () => {
             try {
-                const recalls = await fetchOngoingFoodRecalls(100);
+                const recalls = await fetchRecallsWithSummaries({
+                    limit: 100,
+                    summarizeTopN: 20
+                });
                 res.writeHead(200, { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ ok: true, data: recalls }));
             } catch (err) {
